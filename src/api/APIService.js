@@ -1,12 +1,9 @@
 import axios from 'axios';
-
-export function api_url(){
-  return 'http://e354-2405-4802-133-77c0-70b3-160a-ff4e-de6a.ngrok.io/api/v1';
-}
+import { API_URL } from '../api/config';
 
 const ApiService = {
   axios,
-  init(baseURL=process.env.API_URL) {
+  init(baseURL=API_URL) {
     axios.defaults.baseURL = baseURL;
     this.initCommonData();
   },

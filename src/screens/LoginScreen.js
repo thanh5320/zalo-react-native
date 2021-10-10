@@ -1,17 +1,27 @@
 import React, { useState } from 'react';
 import { StyleSheet, Text, View, TextInput, TouchableOpacity } from 'react-native';
 import BackButton from '../components/BackButton';
-import axios from 'axios';
 import { AntDesign } from '@expo/vector-icons';
+import ApiService from '../api/APIService';
 
 import { phoneValidator } from '../helpers/phoneValidator'
 import { passwordValidator } from '../helpers/passwordValidator';
 import TitleBar from '../components/TitleBar';
 import NotifiBar from '../components/NotifiBar';
 import { API_URL } from '../api/config';
+import { setToken, setNumberPhone, setUsername,setLogin } from '../redux/actions/userAction';
+import { useSelector, useDispatch } from 'react-redux';
 
 
 export default function LoginScreen({ navigation }) {
+  //const { phone } = useSelector(state => state.userReducer);
+  const dispatch = useDispatch();
+
+  const addToken = new_token => dispatch(setToken(new_token));
+  const addPhone = new_phone => dispatch(setNumberPhone(new_phone));
+  const addUsername = new_username => dispatch(setUsername(new_username));
+  const addLogin = isLogin => dispatch(setLogin(isLogin));
+
   const [phone, setPhone] = useState({ value: '', error: '' });
   const [password, setPassword] = useState({ value: '', error: '' });
   const [err, setErr] = useState('');
@@ -28,14 +38,17 @@ export default function LoginScreen({ navigation }) {
   };
 
   const postToLoginAPI = (navigation) => {
-    axios
+    ApiService
       .post(API_URL+ '/users/login', {
         phonenumber: phone.value,
         password: password.value,
       })
       .then(function (response) {
         // handle success
-        //alert(JSON.stringify(response.data));
+        addToken(response.data.token);
+        addPhone(response.data.data.phonenumber);
+        addUsername(response.data.data.username);
+        addLogin('true');
         navigation.reset({
           index: 0,
           routes: [{ name: 'Home' }],
@@ -65,6 +78,7 @@ export default function LoginScreen({ navigation }) {
           style={styles.phone_input}
           returnKeyType="next"
           value={phone.value}
+          //defaultValue={phone}
           onChangeText={(text) => setPhone({ value: text, error: '' })}
         />
       </View>

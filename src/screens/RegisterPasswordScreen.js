@@ -5,11 +5,20 @@ import NotifiBar from '../components/NotifiBar';
 import TitleBar from '../components/TitleBar';
 import { AntDesign } from '@expo/vector-icons';
 import { API_URL } from '../api/config';
-import axios from 'axios';
+import ApiService from '../api/APIService';
+import { setToken, setNumberPhone, setUsername, setLogin } from '../redux/actions/userAction';
+import { useSelector, useDispatch } from 'react-redux';
 
 import { passwordValidator } from '../helpers/passwordValidator';
 
 export default function RegisterPasswordScreen({ navigation, route }) {
+    const dispatch = useDispatch();
+
+    const addToken = new_token => dispatch(setToken(new_token));
+    const addPhone = new_phone => dispatch(setNumberPhone(new_phone));
+    const addUsername = new_username => dispatch(setUsername(new_username));
+    const addLogin = isLogin => dispatch(setLogin(isLogin));
+
     const name = route.params.name;
     const phone = route.params.phone;
     const [password, setPassword] = useState('');
@@ -22,7 +31,7 @@ export default function RegisterPasswordScreen({ navigation, route }) {
             setErr(passwordError);
             return;
         }
-        if(password!=confirmPassword){
+        if (password != confirmPassword) {
             setErr('Xác thực mật khẩu sai!');
             return;
         }
@@ -31,7 +40,7 @@ export default function RegisterPasswordScreen({ navigation, route }) {
     };
 
     const postToLoginAPI = (navigation) => {
-        axios
+        ApiService
             .post(API_URL + '/users/register', {
                 phonenumber: phone,
                 password: password,
@@ -40,6 +49,10 @@ export default function RegisterPasswordScreen({ navigation, route }) {
             })
             .then(function (response) {
                 // handle success
+                addToken(response.data.token);
+                addPhone(response.data.data.phonenumber);
+                addUsername(response.data.data.username);
+                addLogin('true');
                 navigation.reset({
                     index: 0,
                     routes: [{ name: 'Home' }],
@@ -58,7 +71,7 @@ export default function RegisterPasswordScreen({ navigation, route }) {
                 <TitleBar text='Tạo tài khoản' />
             </View>
 
-            <NotifiBar text='Nhập số điện thoại của bạn để tạo tài khoản mới.' />
+            <NotifiBar text='Nhập mật khẩu của bạn.' />
 
             <View style={styles.main}>
                 <TextInput

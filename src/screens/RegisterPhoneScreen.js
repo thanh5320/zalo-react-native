@@ -61,6 +61,7 @@ export default function RegisterPhoneScreen({ navigation, route }) {
                     label='phone'
                     placeholder="Số điện thoại"
                     style={styles.input}
+                    keyboardType="numeric"
                     returnKeyType="next"
                     value={phone.value}
                     onChangeText={(text) => setPhone({ value: text, error: '' })}
